@@ -121,14 +121,15 @@ end
 function write_cellranger_h5(h5::HDF5.File, counts::DataMatrix{<:SparseMatrixCSC};
                              library_ids,
                              original_gem_groups = [1],
-                             version = 2)
+                             version = 2,
+                             kwargs...)
 	write_cellranger_attributes(h5; library_ids, original_gem_groups, version)
 
 	gmatrix = create_group(h5, "matrix")
 	write_cellranger_matrix(gmatrix, counts.matrix)
 	write_cellranger_barcodes(gmatrix, counts.obs.barcode)
 	gfeatures = create_group(gmatrix, "features")
-	write_cellranger_features(gfeatures, counts.var)
+	write_cellranger_features(gfeatures, counts.var; kwargs...)
 end
 
 write_cellranger_h5(filename, counts; kwargs...) = h5open(filename, "w") do h5
