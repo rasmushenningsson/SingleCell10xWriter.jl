@@ -73,8 +73,11 @@ write_attr(g, name, value) = attributes(g)[name] = value
 
 # --- High level writing ---
 
-function write_cellranger_attributes(h5; library_ids, original_gem_groups, version)
-	write_attr_string(h5, "chemistry_description", "Single Cell 3' v3"; fixed=false)
+function write_cellranger_attributes(h5; library_ids,
+                                         original_gem_groups,
+                                         version,
+                                         chemistry_description)
+	write_attr_string(h5, "chemistry_description", chemistry_description; fixed=false)
 	write_attr_string(h5, "filetype", "matrix"; utf8=true, fixed=false)
 	write_attr_string_vec(h5, "library_ids", library_ids)
 	write_attr(h5, "original_gem_groups", original_gem_groups)
@@ -122,8 +125,9 @@ function write_cellranger_h5(h5::HDF5.File, counts::DataMatrix{<:SparseMatrixCSC
                              library_ids,
                              original_gem_groups = [1],
                              version = 2,
+                             chemistry_description = "Single Cell 3' v3",
                              kwargs...)
-	write_cellranger_attributes(h5; library_ids, original_gem_groups, version)
+	write_cellranger_attributes(h5; library_ids, original_gem_groups, version, chemistry_description)
 
 	gmatrix = create_group(h5, "matrix")
 	write_cellranger_matrix(gmatrix, counts.matrix)
@@ -132,6 +136,6 @@ function write_cellranger_h5(h5::HDF5.File, counts::DataMatrix{<:SparseMatrixCSC
 	write_cellranger_features(gfeatures, counts.var; kwargs...)
 end
 
-write_cellranger_h5(filename, counts; kwargs...) = h5open(filename, "w") do h5
+write_cellranger_h5(filename, counts::DataMatrix{<:SparseMatrixCSC}; kwargs...) = h5open(filename, "w") do h5
 	write_cellranger_h5(h5, counts; kwargs...)
 end
