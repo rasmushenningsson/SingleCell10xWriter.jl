@@ -125,7 +125,8 @@ function write_cellranger_h5(h5::HDF5.File, counts::DataMatrix{<:SparseMatrixCSC
                              library_ids,
                              original_gem_groups = [1],
                              version = 2,
-                             chemistry_description = "Single Cell 3' v3",
+                             # chemistry_description = "Single Cell 3' v3",
+                             chemistry_description,
                              kwargs...)
 	write_cellranger_attributes(h5; library_ids, original_gem_groups, version, chemistry_description)
 
